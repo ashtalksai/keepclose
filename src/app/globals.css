@@ -3,22 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@font-face {
-  font-family: 'Instrument Serif';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/instrumentserif/v4/jizBRFtNs2ka5fXjeivQ4LroWlx-2zIZj1bIkNo.woff2) format('woff2');
-}
-
-@font-face {
-  font-family: 'General Sans';
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url(https://cdn.fontshare.com/wf/SVLFGSIL4ZVXKV6XPTZMN4VG4RPQBZQC/BNPAXBX3WFX6DNQZ3YPXNXRHJSZJQSJQ/45SXKLKIUZKKDZDH5U2RFD3DQWKRVCQY.woff2) format('woff2');
-}
-
 :root {
   /* Backgrounds */
   --bg-primary: #faf8f5;
@@ -51,18 +35,18 @@
 @theme inline {
   --color-background: var(--bg-primary);
   --color-foreground: var(--text-primary);
-  --font-sans: 'General Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif), ui-serif, Georgia, serif;
 }
 
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'General Sans', sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
 }
 
 .font-serif {
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--font-serif), Georgia, serif;
 }
 
 .bg-pattern {
