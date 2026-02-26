@@ -1,736 +1,918 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-
-// Icons
-const GTMIcon = () => (
-  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-  </svg>
-);
-
-const MarketingIcon = () => (
-  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
-  </svg>
-);
-
-const BrandIcon = () => (
-  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-  </svg>
-);
-
-const AssetsIcon = () => (
-  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-  </svg>
-);
-
-const PitchIcon = () => (
-  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-  </svg>
-);
-
-const DownloadIcon = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-  </svg>
-);
-
-const ExternalLinkIcon = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-  </svg>
-);
+import { 
+  BarChart3, 
+  Target, 
+  Megaphone, 
+  Palette, 
+  Presentation,
+  ExternalLink,
+  Github,
+  Menu,
+  X,
+  CheckCircle2,
+  XCircle,
+  TrendingUp,
+  Users,
+  DollarSign,
+  Clock,
+  MessageSquare,
+  Zap,
+  Shield,
+  Heart,
+  Calendar,
+  Bell,
+  Brain,
+  Sparkles,
+  Star
+} from "lucide-react";
 
 const sections = [
-  { id: "gtm", label: "GTM Plan", icon: GTMIcon },
-  { id: "marketing", label: "Marketing", icon: MarketingIcon },
-  { id: "brand", label: "Brand", icon: BrandIcon },
-  { id: "assets", label: "Assets", icon: AssetsIcon },
-  { id: "pitch", label: "Pitch Deck", icon: PitchIcon },
+  { id: "research", label: "Research", icon: BarChart3 },
+  { id: "gtm", label: "GTM Plan", icon: Target },
+  { id: "marketing", label: "Marketing", icon: Megaphone },
+  { id: "brand", label: "Brand", icon: Palette },
+  { id: "pitch", label: "Pitch Deck", icon: Presentation, external: "/pitch" },
 ];
 
 export default function DocsPage() {
-  const [activeSection, setActiveSection] = useState("gtm");
+  const [activeSection, setActiveSection] = useState("research");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const sectionElements = sections.filter(s => !s.external).map(s => ({
+        id: s.id,
+        element: document.getElementById(s.id)
+      }));
+
+      for (const section of sectionElements.reverse()) {
+        if (section.element) {
+          const rect = section.element.getBoundingClientRect();
+          if (rect.top <= 150) {
+            setActiveSection(section.id);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      setMobileMenuOpen(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)]">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-[var(--bg-surface)] border-b border-[var(--border)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="font-serif text-xl text-[var(--accent-terracotta)]">KeepClose</span>
-              <span className="text-[var(--text-tertiary)]">— Documentation</span>
-            </Link>
-            <div className="hidden md:flex items-center gap-4">
-              <Link href="/" className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent-terracotta)]">
-                Live Site
-              </Link>
-              <a 
-                href="https://github.com/ashtalksai/keepclose" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent-terracotta)] flex items-center gap-1"
-              >
-                GitHub <ExternalLinkIcon />
-              </a>
+    <div className="min-h-screen bg-[#faf8f5]">
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#faf8f5]/95 backdrop-blur-sm border-b border-[var(--border)]">
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--accent-terracotta)] to-[var(--accent-sage)] flex items-center justify-center">
+              <span className="text-white font-bold text-sm">KC</span>
             </div>
+            <span className="font-serif text-[var(--text-primary)]">Docs</span>
           </div>
+          <button 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
-      </header>
-
-      {/* Mobile Tab Navigation */}
-      <nav className="md:hidden sticky top-16 z-40 bg-[var(--bg-surface)] border-b border-[var(--border)] overflow-x-auto">
-        <div className="flex">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              onClick={() => setActiveSection(section.id)}
-              className={`flex-shrink-0 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeSection === section.id
-                  ? "border-[var(--accent-terracotta)] text-[var(--accent-terracotta)]"
-                  : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-              }`}
-            >
-              {section.label}
-            </button>
-          ))}
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto flex">
-        {/* Desktop Sidebar */}
-        <aside className="hidden md:block w-64 flex-shrink-0 border-r border-[var(--border)] min-h-[calc(100vh-4rem)] sticky top-16">
-          <nav className="p-4 space-y-2">
-            {sections.map((section) => {
-              const Icon = section.icon;
-              return (
+        
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="bg-white border-b border-[var(--border)] py-2">
+            {sections.map((section) => (
+              section.external ? (
+                <Link
+                  key={section.id}
+                  href={section.external}
+                  className="flex items-center gap-3 px-4 py-3 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]"
+                >
+                  <section.icon size={18} />
+                  <span>{section.label}</span>
+                  <ExternalLink size={14} className="ml-auto" />
+                </Link>
+              ) : (
                 <button
                   key={section.id}
-                  onClick={() => setActiveSection(section.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${
-                    activeSection === section.id
-                      ? "bg-[var(--accent-terracotta)] text-white"
-                      : "text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+                  onClick={() => scrollToSection(section.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 transition-colors ${
+                    activeSection === section.id 
+                      ? "text-[var(--accent-terracotta)] bg-[var(--accent-terracotta)]/10" 
+                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]"
                   }`}
                 >
-                  <Icon />
-                  <span className="font-medium">{section.label}</span>
+                  <section.icon size={18} />
+                  <span>{section.label}</span>
                 </button>
-              );
-            })}
-            <hr className="my-4 border-[var(--border)]" />
+              )
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 flex-col bg-white border-r border-[var(--border)]">
+        <div className="p-6 border-b border-[var(--border)]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent-terracotta)] to-[var(--accent-sage)] flex items-center justify-center">
+              <span className="text-white font-bold">KC</span>
+            </div>
+            <div>
+              <h1 className="font-serif text-[var(--text-primary)]">KeepClose</h1>
+              <p className="text-xs text-[var(--text-tertiary)]">Documentation</p>
+            </div>
+          </div>
+        </div>
+
+        <nav className="flex-1 py-4">
+          {sections.map((section) => (
+            section.external ? (
+              <Link
+                key={section.id}
+                href={section.external}
+                className="flex items-center gap-3 px-6 py-3 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition-colors"
+              >
+                <section.icon size={18} />
+                <span className="text-sm font-medium">{section.label}</span>
+                <ExternalLink size={14} className="ml-auto opacity-50" />
+              </Link>
+            ) : (
+              <button
+                key={section.id}
+                onClick={() => scrollToSection(section.id)}
+                className={`w-full flex items-center gap-3 px-6 py-3 transition-all ${
+                  activeSection === section.id
+                    ? "text-[var(--accent-terracotta)] bg-[var(--accent-terracotta)]/10 border-r-2 border-[var(--accent-terracotta)]"
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]"
+                }`}
+              >
+                <section.icon size={18} />
+                <span className="text-sm font-medium">{section.label}</span>
+              </button>
+            )
+          ))}
+        </nav>
+
+        <div className="p-6 border-t border-[var(--border)]">
+          <div className="space-y-2">
             <Link 
-              href="/"
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+              href="/" 
+              className="flex items-center gap-2 text-sm text-[var(--text-tertiary)] hover:text-[var(--accent-terracotta)] transition-colors"
             >
+              <ExternalLink size={14} />
               Live Site
             </Link>
-            <a 
-              href="https://github.com/ashtalksai/keepclose"
+            <Link 
+              href="https://github.com/ashtalksai/keepclose" 
               target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+              className="flex items-center gap-2 text-sm text-[var(--text-tertiary)] hover:text-[var(--accent-terracotta)] transition-colors"
             >
-              GitHub <ExternalLinkIcon />
-            </a>
-          </nav>
-        </aside>
+              <Github size={14} />
+              GitHub
+            </Link>
+          </div>
+        </div>
+      </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 p-6 md:p-8 max-w-4xl">
-          {activeSection === "gtm" && <GTMSection />}
-          {activeSection === "marketing" && <MarketingSection />}
-          {activeSection === "brand" && <BrandSection />}
-          {activeSection === "assets" && <AssetsSection />}
-          {activeSection === "pitch" && <PitchSection />}
-        </main>
-      </div>
+      {/* Main Content */}
+      <main className="lg:ml-64 pt-16 lg:pt-0">
+        {/* Research Section */}
+        <section id="research" className="min-h-screen p-6 lg:p-12">
+          <div className="max-w-5xl mx-auto">
+            {/* Hero */}
+            <div className="relative rounded-3xl bg-gradient-to-br from-[var(--accent-terracotta)]/20 via-[var(--accent-sage)]/10 to-[var(--accent-warm-yellow)]/20 p-8 lg:p-12 mb-8 overflow-hidden">
+              <div className="absolute inset-0 bg-pattern opacity-30" />
+              <div className="relative">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-terracotta)]/20 text-[var(--accent-terracotta)] text-sm font-medium mb-4">
+                  <BarChart3 size={14} />
+                  Market Research
+                </div>
+                <h2 className="font-serif text-3xl lg:text-4xl text-[var(--text-primary)] mb-4">
+                  AI Co-Organizer for Women&apos;s Groups
+                </h2>
+                <p className="text-[var(--text-secondary)] text-lg max-w-2xl">
+                  70% of women&apos;s groups die within 6 months — burned-out organizers carrying all the mental load. 
+                  KeepClose is the AI co-pilot that keeps groups alive.
+                </p>
+              </div>
+            </div>
+
+            {/* Opportunity Score */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              {[
+                { label: "Opportunity", value: "8/10", color: "from-[var(--success-green)] to-emerald-600" },
+                { label: "Problem Severity", value: "9/10", color: "from-[var(--accent-terracotta)] to-[var(--alert-red)]" },
+                { label: "Feasibility", value: "8/10", color: "from-[var(--accent-sage)] to-teal-600" },
+                { label: "Why Now", value: "8/10", color: "from-[var(--accent-warm-yellow)] to-amber-600" },
+              ].map((score) => (
+                <div key={score.label} className="bg-white rounded-2xl p-5 border border-[var(--border)] shadow-sm">
+                  <p className="text-[var(--text-tertiary)] text-sm mb-2">{score.label}</p>
+                  <p className={`text-3xl font-bold bg-gradient-to-r ${score.color} bg-clip-text text-transparent`}>
+                    {score.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Bento Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+              {/* Market Size - Large Card */}
+              <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                  <TrendingUp className="text-[var(--accent-terracotta)]" size={20} />
+                  Market Opportunity
+                </h3>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="bg-gradient-to-br from-[var(--accent-terracotta)] to-[var(--accent-sage)] rounded-xl p-4 text-white">
+                    <p className="text-xs opacity-80 font-mono">TAM</p>
+                    <p className="text-2xl font-bold mt-1">$2.8B</p>
+                  </div>
+                  <div className="bg-[var(--bg-secondary)] rounded-xl p-4">
+                    <p className="text-xs text-[var(--text-tertiary)] font-mono">TARGET USERS</p>
+                    <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">5M+</p>
+                    <p className="text-xs text-[var(--text-tertiary)]">group organizers</p>
+                  </div>
+                  <div className="bg-[var(--bg-secondary)] rounded-xl p-4">
+                    <p className="text-xs text-[var(--text-tertiary)] font-mono">DEATH RATE</p>
+                    <p className="text-2xl font-bold text-[var(--alert-red)] mt-1">70%</p>
+                    <p className="text-xs text-[var(--text-tertiary)]">within 6 months</p>
+                  </div>
+                </div>
+                <div className="mt-4 p-4 bg-[var(--bg-secondary)] rounded-xl">
+                  <p className="text-[var(--text-secondary)] text-sm">
+                    <span className="text-[var(--accent-terracotta)] font-semibold">&quot;book club organizing tools&quot;</span> — 8K monthly searches. 
+                    Competitors focus on scheduling. No one focuses on keeping groups ALIVE.
+                  </p>
+                </div>
+              </div>
+
+              {/* Execution */}
+              <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                  <Clock className="text-[var(--accent-sage)]" size={20} />
+                  Execution
+                </h3>
+                <div className="flex items-center justify-center h-32">
+                  <div className="text-center">
+                    <p className="text-5xl font-bold text-[var(--accent-sage)]">4</p>
+                    <p className="text-[var(--text-tertiary)] text-sm">/10 difficulty</p>
+                    <p className="text-[var(--text-tertiary)] text-xs mt-2">2-3 week MVP</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Problem Deep Dive */}
+            <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm mb-8">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                <Heart className="text-[var(--alert-red)]" size={20} />
+                The Real Problem
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-gradient-to-br from-[var(--alert-red)]/10 to-[var(--accent-terracotta)]/10 rounded-xl p-5">
+                  <h4 className="font-medium text-[var(--text-primary)] mb-3">Organizer Burnout</h4>
+                  <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
+                    <li className="flex items-start gap-2">
+                      <span className="text-[var(--alert-red)]">•</span>
+                      One person does ALL the work — scheduling, reminders, chasing RSVPs
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[var(--alert-red)]">•</span>
+                      Started to connect, became unpaid admin
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[var(--alert-red)]">•</span>
+                      Emotional labor of keeping group engaged falls on founder
+                    </li>
+                  </ul>
+                </div>
+                <div className="bg-gradient-to-br from-[var(--accent-sage)]/10 to-[var(--accent-warm-yellow)]/10 rounded-xl p-5">
+                  <h4 className="font-medium text-[var(--text-primary)] mb-3">Why Groups Die</h4>
+                  <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
+                    <li className="flex items-start gap-2">
+                      <span className="text-[var(--accent-sage)]">•</span>
+                      Quiet members drift away unnoticed
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[var(--accent-sage)]">•</span>
+                      No early warning system for disengagement
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[var(--accent-sage)]">•</span>
+                      Scheduling friction kills momentum
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Validation Signals */}
+            <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm mb-8">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                <MessageSquare className="text-[var(--accent-terracotta)]" size={20} />
+                Validation Signals
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  { source: "r/bookclub", quote: "I'm exhausted from being the only one who organizes anything", date: "Feb 2025" },
+                  { source: "r/Mommit", quote: "Started a playdate group, now I'm basically an unpaid event planner", date: "Jan 2025" },
+                  { source: "Facebook Groups", quote: "Anyone have a system for tracking who's actually showing up?", date: "Dec 2024" },
+                ].map((signal, i) => (
+                  <div key={i} className="bg-[var(--bg-secondary)] rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-6 h-6 rounded bg-[var(--accent-terracotta)]/20 flex items-center justify-center">
+                        <span className="text-[var(--accent-terracotta)] text-xs font-bold">R</span>
+                      </div>
+                      <span className="text-[var(--text-secondary)] text-sm font-medium">{signal.source}</span>
+                    </div>
+                    <p className="text-[var(--text-tertiary)] text-sm italic">&quot;{signal.quote}&quot;</p>
+                    <p className="text-[var(--text-tertiary)] text-xs mt-2">{signal.date}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Competition */}
+            <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+                <Users className="text-[var(--accent-sage)]" size={20} />
+                Competitive Landscape
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-[var(--border)]">
+                      <th className="text-left py-3 px-4 text-[var(--text-tertiary)] text-sm font-medium">Company</th>
+                      <th className="text-center py-3 px-4 text-[var(--text-tertiary)] text-sm font-medium">Engagement</th>
+                      <th className="text-center py-3 px-4 text-[var(--text-tertiary)] text-sm font-medium">AI Nudges</th>
+                      <th className="text-center py-3 px-4 text-[var(--text-tertiary)] text-sm font-medium">Memory</th>
+                      <th className="text-left py-3 px-4 text-[var(--text-tertiary)] text-sm font-medium">Weakness</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-[var(--border)] bg-[var(--accent-terracotta)]/5">
+                      <td className="py-3 px-4 text-[var(--text-primary)] font-medium flex items-center gap-2">
+                        <Star size={14} className="text-[var(--accent-terracotta)]" />
+                        KeepClose
+                      </td>
+                      <td className="py-3 px-4 text-center"><CheckCircle2 size={18} className="text-[var(--success-green)] mx-auto" /></td>
+                      <td className="py-3 px-4 text-center"><CheckCircle2 size={18} className="text-[var(--success-green)] mx-auto" /></td>
+                      <td className="py-3 px-4 text-center"><CheckCircle2 size={18} className="text-[var(--success-green)] mx-auto" /></td>
+                      <td className="py-3 px-4 text-[var(--text-tertiary)] text-sm">New entrant</td>
+                    </tr>
+                    <tr className="border-b border-[var(--border)]">
+                      <td className="py-3 px-4 text-[var(--text-secondary)]">Bookclubs.com</td>
+                      <td className="py-3 px-4 text-center"><XCircle size={18} className="text-[var(--alert-red)]/50 mx-auto" /></td>
+                      <td className="py-3 px-4 text-center"><XCircle size={18} className="text-[var(--alert-red)]/50 mx-auto" /></td>
+                      <td className="py-3 px-4 text-center"><XCircle size={18} className="text-[var(--alert-red)]/50 mx-auto" /></td>
+                      <td className="py-3 px-4 text-[var(--text-tertiary)] text-sm">Book catalog, not organizing</td>
+                    </tr>
+                    <tr className="border-b border-[var(--border)]">
+                      <td className="py-3 px-4 text-[var(--text-secondary)]">WhenAvailable</td>
+                      <td className="py-3 px-4 text-center"><XCircle size={18} className="text-[var(--alert-red)]/50 mx-auto" /></td>
+                      <td className="py-3 px-4 text-center"><XCircle size={18} className="text-[var(--alert-red)]/50 mx-auto" /></td>
+                      <td className="py-3 px-4 text-center"><CheckCircle2 size={18} className="text-[var(--success-green)] mx-auto" /></td>
+                      <td className="py-3 px-4 text-[var(--text-tertiary)] text-sm">Just scheduling polls</td>
+                    </tr>
+                    <tr>
+                      <td className="py-3 px-4 text-[var(--text-secondary)]">GroupMe/WhatsApp</td>
+                      <td className="py-3 px-4 text-center"><XCircle size={18} className="text-[var(--alert-red)]/50 mx-auto" /></td>
+                      <td className="py-3 px-4 text-center"><XCircle size={18} className="text-[var(--alert-red)]/50 mx-auto" /></td>
+                      <td className="py-3 px-4 text-center"><XCircle size={18} className="text-[var(--alert-red)]/50 mx-auto" /></td>
+                      <td className="py-3 px-4 text-[var(--text-tertiary)] text-sm">Generic chat, no group tools</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* GTM Section */}
+        <section id="gtm" className="min-h-screen p-6 lg:p-12 bg-[var(--bg-secondary)]">
+          <div className="max-w-5xl mx-auto">
+            {/* Hero */}
+            <div className="relative rounded-3xl bg-gradient-to-br from-[var(--accent-sage)]/20 via-[var(--accent-terracotta)]/10 to-[var(--accent-warm-yellow)]/20 p-8 lg:p-12 mb-8 overflow-hidden">
+              <div className="absolute inset-0 bg-pattern opacity-30" />
+              <div className="relative">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-sage)]/20 text-[var(--accent-sage)] text-sm font-medium mb-4">
+                  <Target size={14} />
+                  Go-to-Market Plan
+                </div>
+                <h2 className="font-serif text-3xl lg:text-4xl text-[var(--text-primary)] mb-4">
+                  Launch Strategy
+                </h2>
+                <p className="text-[var(--text-secondary)] text-lg max-w-2xl">
+                  Target burned-out book club organizers first. Expand to mom groups, hobby clubs, and eventually corporate ERGs.
+                </p>
+              </div>
+            </div>
+
+            {/* Target Audience */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+              {[
+                { 
+                  type: "Primary", 
+                  audience: "Book Club Organizers",
+                  desc: "Women 30-50 running book clubs who do all the admin work",
+                  color: "from-[var(--accent-terracotta)] to-[var(--alert-red)]"
+                },
+                { 
+                  type: "Secondary", 
+                  audience: "Mom Group Coordinators",
+                  desc: "Playdate organizers, school parent groups, neighborhood moms",
+                  color: "from-[var(--accent-sage)] to-teal-600"
+                },
+                { 
+                  type: "Tertiary", 
+                  audience: "Hobby Club Leaders",
+                  desc: "Running clubs, craft circles, wine tasting groups",
+                  color: "from-[var(--accent-warm-yellow)] to-amber-600"
+                },
+              ].map((target) => (
+                <div key={target.type} className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm">
+                  <div className={`inline-flex px-2 py-1 rounded text-xs font-bold bg-gradient-to-r ${target.color} text-white mb-3`}>
+                    {target.type}
+                  </div>
+                  <h4 className="text-xl font-semibold text-[var(--text-primary)] mb-2">{target.audience}</h4>
+                  <p className="text-[var(--text-tertiary)] text-sm">{target.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Distribution Channels */}
+            <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm mb-8">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-6 flex items-center gap-2">
+                <Megaphone className="text-[var(--accent-terracotta)]" size={20} />
+                Distribution Channels
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { 
+                    channel: "Facebook Groups",
+                    strategy: "Organic content in book club, mom groups (20M+ potential reach)",
+                    priority: "High"
+                  },
+                  { 
+                    channel: "Reddit",
+                    strategy: "r/bookclub, r/Mommit, r/parenting — answer questions, soft launch",
+                    priority: "High"
+                  },
+                  { 
+                    channel: "Pinterest SEO",
+                    strategy: "\"book club organization tips\" pins driving to landing page",
+                    priority: "Medium"
+                  },
+                  { 
+                    channel: "Referral Program",
+                    strategy: "1 organizer = 8-12 members. Referral bonus for group invites",
+                    priority: "Medium"
+                  },
+                ].map((item) => (
+                  <div key={item.channel} className="bg-[var(--bg-secondary)] rounded-xl p-5 flex gap-4">
+                    <div className={`w-2 rounded-full ${item.priority === "High" ? "bg-[var(--accent-terracotta)]" : "bg-[var(--accent-sage)]"}`} />
+                    <div>
+                      <h4 className="text-[var(--text-primary)] font-medium mb-1">{item.channel}</h4>
+                      <p className="text-[var(--text-tertiary)] text-sm">{item.strategy}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Launch Phases */}
+            <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm mb-8">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-6 flex items-center gap-2">
+                <Zap className="text-[var(--accent-sage)]" size={20} />
+                Launch Timeline
+              </h3>
+              <div className="space-y-6">
+                <div className="relative pl-8 pb-8 border-l-2 border-[var(--accent-terracotta)]">
+                  <div className="absolute -left-2 top-0 w-4 h-4 rounded-full bg-[var(--accent-terracotta)]" />
+                  <div className="bg-[var(--bg-secondary)] rounded-xl p-5">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-[var(--accent-terracotta)] font-mono text-sm font-bold">PHASE 1</span>
+                      <span className="text-[var(--text-tertiary)] text-sm">Weeks 1-4</span>
+                    </div>
+                    <h4 className="text-[var(--text-primary)] font-semibold mb-2">Beta Launch — 20 Struggling Groups</h4>
+                    <ul className="text-[var(--text-tertiary)] text-sm space-y-1">
+                      <li>• Recruit from r/bookclub, Facebook mom groups</li>
+                      <li>• Free for 3 months, document attendance improvement</li>
+                      <li>• Focus on groups that have &quot;gone quiet&quot;</li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="relative pl-8 border-l-2 border-[var(--accent-sage)]">
+                  <div className="absolute -left-2 top-0 w-4 h-4 rounded-full bg-[var(--accent-sage)]" />
+                  <div className="bg-[var(--bg-secondary)] rounded-xl p-5">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-[var(--accent-sage)] font-mono text-sm font-bold">PHASE 2</span>
+                      <span className="text-[var(--text-tertiary)] text-sm">Months 2-3</span>
+                    </div>
+                    <h4 className="text-[var(--text-primary)] font-semibold mb-2">Organic Growth — 200 Groups</h4>
+                    <ul className="text-[var(--text-tertiary)] text-sm space-y-1">
+                      <li>• Launch referral program (invite your group = 1 month free)</li>
+                      <li>• Content marketing: &quot;How to Keep Book Club Alive&quot; series</li>
+                      <li>• Testimonials from beta groups</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Pricing Strategy */}
+            <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm mb-8">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-6 flex items-center gap-2">
+                <DollarSign className="text-[var(--accent-terracotta)]" size={20} />
+                Pricing Strategy
+              </h3>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="bg-[var(--bg-secondary)] rounded-xl p-5 border border-[var(--border)]">
+                  <p className="text-[var(--text-tertiary)] text-sm mb-2">FREE</p>
+                  <p className="text-2xl font-bold text-[var(--text-primary)] mb-3">$0</p>
+                  <p className="text-[var(--text-tertiary)] text-sm">1 group, basic features, manual nudges</p>
+                </div>
+                <div className="bg-gradient-to-br from-[var(--accent-terracotta)]/20 to-[var(--accent-sage)]/20 rounded-xl p-5 border border-[var(--accent-terracotta)]/30">
+                  <p className="text-[var(--accent-terracotta)] text-sm mb-2">PRO</p>
+                  <p className="text-2xl font-bold text-[var(--text-primary)] mb-3">$7.99<span className="text-lg text-[var(--text-tertiary)]">/mo</span></p>
+                  <p className="text-[var(--text-tertiary)] text-sm">Per organizer, unlimited groups, AI nudges</p>
+                </div>
+                <div className="bg-[var(--bg-secondary)] rounded-xl p-5 border border-[var(--border)]">
+                  <p className="text-[var(--accent-sage)] text-sm mb-2">GROUP PLAN</p>
+                  <p className="text-2xl font-bold text-[var(--text-primary)] mb-3">$99<span className="text-lg text-[var(--text-tertiary)]">/year</span></p>
+                  <p className="text-[var(--text-tertiary)] text-sm">Whole group up to 12 members</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Key Metrics */}
+            <div className="bg-gradient-to-br from-[var(--accent-terracotta)]/10 to-[var(--accent-sage)]/10 rounded-2xl p-6 border border-[var(--border)]">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-6 flex items-center gap-2">
+                <BarChart3 className="text-[var(--text-primary)]" size={20} />
+                Success Metrics
+              </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  { metric: "North Star", value: "Groups Alive", desc: "Still meeting after 6 mo" },
+                  { metric: "Month 6", value: "200", desc: "Active groups" },
+                  { metric: "Year 1 ARR", value: "$20K", desc: "Target revenue" },
+                  { metric: "Retention", value: "82%", desc: "6-month group survival" },
+                ].map((item) => (
+                  <div key={item.metric} className="text-center bg-white rounded-xl p-4">
+                    <p className="text-[var(--text-tertiary)] text-xs uppercase tracking-wider mb-1">{item.metric}</p>
+                    <p className="text-2xl font-bold text-[var(--text-primary)]">{item.value}</p>
+                    <p className="text-[var(--text-tertiary)] text-xs">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Marketing Section */}
+        <section id="marketing" className="min-h-screen p-6 lg:p-12">
+          <div className="max-w-5xl mx-auto">
+            {/* Hero */}
+            <div className="relative rounded-3xl bg-gradient-to-br from-[var(--accent-warm-yellow)]/20 via-[var(--accent-terracotta)]/10 to-[var(--accent-sage)]/20 p-8 lg:p-12 mb-8 overflow-hidden">
+              <div className="absolute inset-0 bg-pattern opacity-30" />
+              <div className="relative">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-warm-yellow)]/20 text-[var(--accent-warm-yellow)] text-sm font-medium mb-4">
+                  <Megaphone size={14} />
+                  Marketing Strategy
+                </div>
+                <h2 className="font-serif text-3xl lg:text-4xl text-[var(--text-primary)] mb-4">
+                  Positioning & Messaging
+                </h2>
+                <p className="text-[var(--text-secondary)] text-lg max-w-2xl">
+                  Supportive co-host who gets it — not another productivity tool. You don&apos;t have to do this alone.
+                </p>
+              </div>
+            </div>
+
+            {/* Positioning Statement */}
+            <div className="bg-white rounded-2xl p-8 border border-[var(--border)] shadow-sm mb-8">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-6">Positioning Statement</h3>
+              <div className="space-y-4 text-lg">
+                <p><span className="text-[var(--text-tertiary)]">For</span> <span className="text-[var(--text-primary)] font-medium">burned-out women&apos;s group organizers</span></p>
+                <p><span className="text-[var(--text-tertiary)]">Who</span> <span className="text-[var(--text-primary)] font-medium">carry all the mental load of scheduling, reminders, and chasing</span></p>
+                <p><span className="text-[var(--text-tertiary)]">KeepClose is an</span> <span className="text-[var(--accent-terracotta)] font-medium">AI co-organizer</span></p>
+                <p><span className="text-[var(--text-tertiary)]">That</span> <span className="text-[var(--text-primary)] font-medium">tracks engagement, sends personalized nudges, and remembers preferences</span></p>
+                <p><span className="text-[var(--text-tertiary)]">Unlike</span> <span className="text-[var(--text-tertiary)]">scheduling tools that just find times</span></p>
+                <p><span className="text-[var(--text-tertiary)]">We</span> <span className="text-[var(--accent-sage)] font-medium">focus on keeping groups ALIVE, not just scheduled</span></p>
+              </div>
+            </div>
+
+            {/* Tagline Banner */}
+            <div className="bg-gradient-to-r from-[var(--accent-terracotta)] to-[var(--accent-sage)] rounded-2xl p-8 text-center mb-8">
+              <p className="text-white/80 mb-2 text-sm">Tagline</p>
+              <h2 className="font-serif text-3xl md:text-4xl text-white">&quot;You don&apos;t have to do this alone.&quot;</h2>
+            </div>
+
+            {/* Messaging Pillars */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              <div className="bg-gradient-to-br from-[var(--accent-terracotta)] to-[var(--alert-red)] rounded-2xl p-6 text-white">
+                <Heart size={32} className="mb-4 opacity-80" />
+                <h4 className="text-xl font-bold mb-2">Relief</h4>
+                <p className="text-white/80">&quot;You don&apos;t have to chase RSVPs anymore&quot;</p>
+                <p className="text-white/60 text-sm mt-2">Acknowledging burnout as real emotional labor</p>
+              </div>
+              <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm">
+                <Brain size={32} className="mb-4 text-[var(--accent-sage)]" />
+                <h4 className="text-xl font-bold text-[var(--text-primary)] mb-2">Intelligence</h4>
+                <p className="text-[var(--text-secondary)]">&quot;AI that remembers what you forget&quot;</p>
+                <p className="text-[var(--text-tertiary)] text-sm mt-2">Jenny can&apos;t do Tuesdays? We remember forever.</p>
+              </div>
+              <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm">
+                <Sparkles size={32} className="mb-4 text-[var(--accent-warm-yellow)]" />
+                <h4 className="text-xl font-bold text-[var(--text-primary)] mb-2">Connection</h4>
+                <p className="text-[var(--text-secondary)]">&quot;Keep the group alive, not just scheduled&quot;</p>
+                <p className="text-[var(--text-tertiary)] text-sm mt-2">Engagement-first, not calendar-first</p>
+              </div>
+            </div>
+
+            {/* Brand Voice */}
+            <div className="bg-white rounded-2xl p-8 border border-[var(--border)] shadow-sm mb-8">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-6 flex items-center gap-2">
+                <MessageSquare className="text-[var(--accent-sage)]" size={20} />
+                Brand Voice
+              </h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-[var(--bg-secondary)] rounded-xl p-5">
+                  <h4 className="text-[var(--success-green)] font-medium mb-3">✓ We Are</h4>
+                  <ul className="space-y-2 text-[var(--text-secondary)] text-sm">
+                    <li>• Supportive co-host who gets it</li>
+                    <li>• Empathetic, not preachy</li>
+                    <li>• Quiet intelligence working in background</li>
+                    <li>• Celebrating small wins</li>
+                    <li>• Warm and approachable</li>
+                  </ul>
+                </div>
+                <div className="bg-[var(--bg-secondary)] rounded-xl p-5">
+                  <h4 className="text-[var(--alert-red)] font-medium mb-3">✗ We&apos;re Not</h4>
+                  <ul className="space-y-2 text-[var(--text-secondary)] text-sm">
+                    <li>• Corporate productivity tool</li>
+                    <li>• Demanding or guilt-tripping</li>
+                    <li>• Feature-heavy dashboards</li>
+                    <li>• Calendar grids everywhere</li>
+                    <li>• Cold and transactional</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Content Strategy */}
+            <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm mb-8">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-6 flex items-center gap-2">
+                <TrendingUp className="text-[var(--accent-terracotta)]" size={20} />
+                Content Strategy
+              </h3>
+              <div className="space-y-4">
+                {[
+                  { title: "How to Keep Your Book Club Alive (When You're the Only One Organizing)", keyword: "book club organizing tips", volume: "2.1K/mo" },
+                  { title: "The Burnout is Real: A Guide for Mom Group Organizers", keyword: "mom group ideas", volume: "1.8K/mo" },
+                  { title: "5 Signs Your Group is About to Ghost You (And How to Save It)", keyword: "keep group engaged", volume: "1.4K/mo" },
+                  { title: "Stop Being the Unpaid Admin: Delegate Without Drama", keyword: "group organizing app", volume: "900/mo" },
+                ].map((topic, i) => (
+                  <div key={i} className="flex items-start justify-between border-l-2 border-l-[var(--accent-terracotta)] pl-4 py-2">
+                    <div>
+                      <p className="text-[var(--text-primary)] text-sm font-medium">{topic.title}</p>
+                      <p className="text-[var(--text-tertiary)] text-xs mt-1">Keyword: {topic.keyword}</p>
+                    </div>
+                    <span className="text-[var(--accent-terracotta)] text-xs font-mono bg-[var(--accent-terracotta)]/10 px-2 py-1 rounded">{topic.volume}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Social Media Posts */}
+            <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-6">Launch Social Posts</h3>
+              <div className="space-y-4">
+                {[
+                  {
+                    platform: "Instagram",
+                    copy: "You started this group to CONNECT.\n\nNot to become an unpaid event planner.\n\nKeepClose is your AI co-organizer that:\n✓ Remembers who can't do Tuesdays\n✓ Nudges quiet members (so you don't have to)\n✓ Tracks who's drifting away\n\nYou don't have to do this alone 💚",
+                    color: "from-[var(--accent-terracotta)]/20 to-[var(--accent-sage)]/10"
+                  },
+                  {
+                    platform: "Facebook Groups",
+                    copy: "To the woman who runs the book club, the playdate group, the wine night...\n\nThe one who sends the reminders. Chases the RSVPs. Remembers everyone's dietary restrictions.\n\nWe see you. We built KeepClose for you.\n\nYour co-organizer that actually helps. Not another app to manage — an AI that manages for you.",
+                    color: "from-[var(--accent-sage)]/20 to-[var(--accent-warm-yellow)]/10"
+                  },
+                  {
+                    platform: "LinkedIn",
+                    copy: "70% of women's groups die within 6 months.\n\nNot because members don't care — because organizers burn out.\n\nWe built KeepClose: an AI co-organizer that tracks engagement, sends personalized nudges, and remembers preferences.\n\nBecause the person who started the group to connect shouldn't become the unpaid admin.",
+                    color: "from-[var(--accent-warm-yellow)]/20 to-[var(--accent-terracotta)]/10"
+                  }
+                ].map((post, i) => (
+                  <div key={i} className={`bg-gradient-to-br ${post.color} rounded-xl p-5 border border-[var(--border)]`}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-[var(--text-primary)]/10 text-[var(--text-primary)] px-3 py-1 rounded-full text-xs font-bold">POST {i + 1}</span>
+                      <span className="text-[var(--text-tertiary)] text-sm">{post.platform}</span>
+                    </div>
+                    <div className="bg-white rounded-lg p-4">
+                      <p className="text-[var(--text-secondary)] text-sm whitespace-pre-line">{post.copy}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Brand Section */}
+        <section id="brand" className="min-h-screen p-6 lg:p-12 bg-[var(--bg-secondary)]">
+          <div className="max-w-5xl mx-auto">
+            {/* Hero */}
+            <div className="relative rounded-3xl bg-gradient-to-br from-[var(--accent-terracotta)]/30 via-[var(--accent-sage)]/20 to-[var(--accent-warm-yellow)]/30 p-8 lg:p-12 mb-8 overflow-hidden">
+              <div className="absolute inset-0 bg-pattern opacity-30" />
+              <div className="relative">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/50 text-[var(--text-primary)] text-sm font-medium mb-4">
+                  <Palette size={14} />
+                  Brand System
+                </div>
+                <h2 className="font-serif text-3xl lg:text-4xl text-[var(--text-primary)] mb-4">
+                  Visual Identity
+                </h2>
+                <p className="text-[var(--text-secondary)] text-lg max-w-2xl">
+                  Warm terracotta for energy. Soft sage for calm. Earth tones that feel like a supportive friend, not a corporate tool.
+                </p>
+              </div>
+            </div>
+
+            {/* Color Palette */}
+            <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm mb-8">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-6">Color Palette</h3>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="rounded-xl overflow-hidden">
+                  <div className="h-24 bg-[#d4725f]" />
+                  <div className="bg-[var(--bg-secondary)] p-4">
+                    <p className="text-[var(--text-primary)] font-medium">Terracotta</p>
+                    <p className="text-[var(--text-tertiary)] font-mono text-sm">#d4725f</p>
+                  </div>
+                </div>
+                <div className="rounded-xl overflow-hidden">
+                  <div className="h-24 bg-[#7a9588]" />
+                  <div className="bg-[var(--bg-secondary)] p-4">
+                    <p className="text-[var(--text-primary)] font-medium">Sage Green</p>
+                    <p className="text-[var(--text-tertiary)] font-mono text-sm">#7a9588</p>
+                  </div>
+                </div>
+                <div className="rounded-xl overflow-hidden">
+                  <div className="h-24 bg-[#faf8f5]" />
+                  <div className="bg-[var(--bg-secondary)] p-4">
+                    <p className="text-[var(--text-primary)] font-medium">Warm Cream</p>
+                    <p className="text-[var(--text-tertiary)] font-mono text-sm">#faf8f5</p>
+                  </div>
+                </div>
+                <div className="rounded-xl overflow-hidden">
+                  <div className="h-24 bg-[#e8b968]" />
+                  <div className="bg-[var(--bg-secondary)] p-4">
+                    <p className="text-[var(--text-primary)] font-medium">Warm Yellow</p>
+                    <p className="text-[var(--text-tertiary)] font-mono text-sm">#e8b968</p>
+                  </div>
+                </div>
+                <div className="rounded-xl overflow-hidden">
+                  <div className="h-24 bg-[#2d2721]" />
+                  <div className="bg-[var(--bg-secondary)] p-4">
+                    <p className="text-[var(--text-primary)] font-medium">Deep Brown</p>
+                    <p className="text-[var(--text-tertiary)] font-mono text-sm">#2d2721</p>
+                  </div>
+                </div>
+                <div className="rounded-xl overflow-hidden">
+                  <div className="h-24 bg-[#6d9a7f]" />
+                  <div className="bg-[var(--bg-secondary)] p-4">
+                    <p className="text-[var(--text-primary)] font-medium">Success Green</p>
+                    <p className="text-[var(--text-tertiary)] font-mono text-sm">#6d9a7f</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Typography */}
+            <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm mb-8">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-6">Typography</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-[var(--bg-secondary)] rounded-xl p-5">
+                  <p className="text-[var(--text-tertiary)] text-xs uppercase tracking-wider mb-3">Display — Instrument Serif</p>
+                  <p className="font-serif text-3xl text-[var(--text-primary)]">You don&apos;t have to do this alone</p>
+                  <p className="text-[var(--text-tertiary)] text-sm mt-2">Headlines, emotional moments</p>
+                </div>
+                <div className="bg-[var(--bg-secondary)] rounded-xl p-5">
+                  <p className="text-[var(--text-tertiary)] text-xs uppercase tracking-wider mb-3">Body — Plus Jakarta Sans</p>
+                  <p className="text-xl text-[var(--text-primary)]">Your co-organizer that remembers everything.</p>
+                  <p className="text-[var(--text-tertiary)] text-sm mt-2">Paragraphs, UI, buttons</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Components */}
+            <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm mb-8">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-6">Components</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Buttons */}
+                <div className="bg-[var(--bg-secondary)] rounded-xl p-5">
+                  <p className="text-[var(--text-tertiary)] text-xs uppercase tracking-wider mb-4">Buttons</p>
+                  <div className="space-y-4">
+                    <button className="w-full bg-[var(--accent-terracotta)] hover:bg-[var(--accent-terracotta-hover)] text-white px-6 py-3 rounded-lg font-medium transition-all">
+                      Start Free Trial
+                    </button>
+                    <button className="w-full bg-transparent text-[var(--accent-sage)] border-2 border-[var(--accent-sage)] hover:bg-[var(--accent-sage)] hover:text-white px-6 py-3 rounded-lg font-medium transition-all">
+                      Learn More
+                    </button>
+                  </div>
+                </div>
+
+                {/* Status Badges */}
+                <div className="bg-[var(--bg-secondary)] rounded-xl p-5">
+                  <p className="text-[var(--text-tertiary)] text-xs uppercase tracking-wider mb-4">Member Status</p>
+                  <div className="flex flex-wrap gap-3">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#6d9a7f]/20 text-[#6d9a7f] text-sm font-medium">
+                      <span className="w-2 h-2 rounded-full bg-[#6d9a7f]" /> Active
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e8b968]/20 text-[#e8b968] text-sm font-medium">
+                      <span className="w-2 h-2 rounded-full bg-[#e8b968]" /> Quiet
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c85a50]/20 text-[#c85a50] text-sm font-medium">
+                      <span className="w-2 h-2 rounded-full bg-[#c85a50]" /> At Risk
+                    </span>
+                  </div>
+                </div>
+
+                {/* Cards */}
+                <div className="bg-[var(--bg-secondary)] rounded-xl p-5 lg:col-span-2">
+                  <p className="text-[var(--text-tertiary)] text-xs uppercase tracking-wider mb-4">Member Card</p>
+                  <div className="max-w-sm bg-white rounded-xl p-4 border border-[var(--border)] shadow-sm">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--accent-terracotta)] to-[var(--accent-sage)]" />
+                      <div>
+                        <p className="font-medium text-[var(--text-primary)]">Sarah Johnson</p>
+                        <p className="text-sm text-[var(--text-tertiary)]">Book club organizer</p>
+                      </div>
+                      <span className="ml-auto inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#6d9a7f]/20 text-[#6d9a7f] text-xs">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#6d9a7f]" /> Active
+                      </span>
+                    </div>
+                    <p className="text-[var(--text-secondary)] text-sm">Attended 8/10 events • Last seen 2 days ago</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Design Principles */}
+            <div className="bg-white rounded-2xl p-6 border border-[var(--border)] shadow-sm">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-6">Design Principles</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-[var(--accent-terracotta)] mb-2">Warm & Approachable</h4>
+                    <p className="text-sm text-[var(--text-secondary)]">Earth tones, soft corners (8-12px radius), friendly typography. Never corporate.</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-[var(--accent-terracotta)] mb-2">Feed-First Dashboard</h4>
+                    <p className="text-sm text-[var(--text-secondary)]">Show stories, not spreadsheets. Timeline of activity, not calendar grids.</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-[var(--accent-terracotta)] mb-2">People-Focused</h4>
+                    <p className="text-sm text-[var(--text-secondary)]">Member cards with engagement status, not just names in a list.</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-[var(--accent-terracotta)] mb-2">Supportive Copy</h4>
+                    <p className="text-sm text-[var(--text-secondary)]">&quot;You don&apos;t have to do this alone&quot; — empathy, not productivity guilt.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="p-6 lg:p-12 border-t border-[var(--border)] bg-white">
+          <div className="max-w-5xl mx-auto text-center">
+            <p className="text-[var(--text-tertiary)] text-sm">
+              KeepClose — AI Co-Organizer for Women&apos;s Groups
+            </p>
+            <p className="text-[var(--text-tertiary)]/50 text-xs mt-2">
+              Part of the ChimeStream Portfolio
+            </p>
+          </div>
+        </footer>
+      </main>
     </div>
-  );
-}
-
-function GTMSection() {
-  return (
-    <section className="space-y-8">
-      <div>
-        <h1 className="font-serif text-3xl md:text-4xl text-[var(--text-primary)] mb-4">Go-to-Market Plan</h1>
-        <p className="text-[var(--text-secondary)] text-lg">Launch strategy for KeepClose — AI co-organizer for women&apos;s groups</p>
-      </div>
-
-      {/* Executive Summary */}
-      <div className="bg-gradient-to-br from-[var(--accent-terracotta)] to-[var(--accent-sage)] rounded-2xl p-6 md:p-8 text-white">
-        <h2 className="text-xl font-bold mb-4">Executive Summary</h2>
-        <p className="text-white/90 mb-6">
-          KeepClose launches targeting burned-out women&apos;s group organizers (book clubs, mom groups) with an AI co-organizer 
-          that prevents the 70% group death rate within 6 months.
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white/10 rounded-xl p-4">
-            <div className="text-2xl font-bold">$2.8B</div>
-            <div className="text-sm text-white/70">TAM</div>
-          </div>
-          <div className="bg-white/10 rounded-xl p-4">
-            <div className="text-2xl font-bold">5M+</div>
-            <div className="text-sm text-white/70">Organizers</div>
-          </div>
-          <div className="bg-white/10 rounded-xl p-4">
-            <div className="text-2xl font-bold">200</div>
-            <div className="text-sm text-white/70">Groups Month 6</div>
-          </div>
-          <div className="bg-white/10 rounded-xl p-4">
-            <div className="text-2xl font-bold">$20K</div>
-            <div className="text-sm text-white/70">ARR Target</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Target Audience */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-          <h3 className="font-semibold text-lg mb-4 text-[var(--accent-terracotta)]">Primary Target</h3>
-          <ul className="space-y-3 text-[var(--text-secondary)]">
-            <li className="flex items-start gap-2">
-              <span className="text-[var(--accent-sage)]">•</span>
-              Women aged 30-50 organizing social groups
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[var(--accent-sage)]">•</span>
-              Book club leaders, mom group coordinators
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[var(--accent-sage)]">•</span>
-              Burned-out founders carrying all the admin
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-[var(--accent-sage)]">•</span>
-              Tech comfortable but not power users
-            </li>
-          </ul>
-        </div>
-        <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-          <h3 className="font-semibold text-lg mb-4 text-[var(--accent-terracotta)]">Pain Point</h3>
-          <blockquote className="italic text-[var(--text-secondary)] border-l-4 border-[var(--accent-sage)] pl-4">
-            &quot;I&apos;ve been running our book club for 3 years. It all falls to me — the scheduling, the 
-            reminders, the chasing. I&apos;m exhausted.&quot;
-          </blockquote>
-          <p className="mt-4 text-sm text-[var(--text-tertiary)]">— Sarah, book club organizer</p>
-        </div>
-      </div>
-
-      {/* Channels */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-        <h3 className="font-semibold text-lg mb-6 text-[var(--text-primary)]">Distribution Channels</h3>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[
-            { channel: "Facebook Groups", focus: "Book club organizers, mom groups", priority: "PRIMARY" },
-            { channel: "Reddit", focus: "r/bookclub, r/mommit, r/parenting", priority: "ORGANIC" },
-            { channel: "Pinterest", focus: "Event planning SEO long-tail", priority: "SEO" },
-            { channel: "LinkedIn", focus: "Corporate ERG organizers", priority: "B2B" },
-            { channel: "Referral Program", focus: "1 organizer = 8-12 members", priority: "VIRAL" },
-          ].map((item, i) => (
-            <div key={i} className="p-4 rounded-xl bg-[var(--bg-secondary)]">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-medium">{item.channel}</span>
-                <span className="text-xs px-2 py-1 rounded-full bg-[var(--accent-terracotta)] text-white">{item.priority}</span>
-              </div>
-              <p className="text-sm text-[var(--text-secondary)]">{item.focus}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Timeline */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-        <h3 className="font-semibold text-lg mb-6 text-[var(--text-primary)]">90-Day Timeline</h3>
-        <div className="space-y-4">
-          {[
-            { phase: "Phase 1: Beta", time: "Weeks 1-4", goals: "20 struggling groups, free for 3 months, document attendance improvement" },
-            { phase: "Phase 2: Organic", time: "Months 2-3", goals: "Launch in Facebook mom groups, referral program activation" },
-            { phase: "Phase 3: Scale", time: "Months 4-6", goals: "200 groups, $20K ARR, content marketing ramp" },
-          ].map((phase, i) => (
-            <div key={i} className="flex gap-4 items-start">
-              <div className="w-3 h-3 rounded-full bg-[var(--accent-terracotta)] mt-2 flex-shrink-0" />
-              <div className="flex-1 pb-4 border-b border-[var(--border)] last:border-0">
-                <div className="flex flex-wrap gap-2 items-center mb-1">
-                  <span className="font-medium">{phase.phase}</span>
-                  <span className="text-xs text-[var(--text-tertiary)]">{phase.time}</span>
-                </div>
-                <p className="text-sm text-[var(--text-secondary)]">{phase.goals}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Pricing */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-        <h3 className="font-semibold text-lg mb-6 text-[var(--text-primary)]">Pricing Strategy</h3>
-        <div className="grid md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-xl bg-[var(--bg-secondary)]">
-            <div className="text-sm text-[var(--text-tertiary)] mb-1">Free</div>
-            <div className="text-2xl font-bold text-[var(--text-primary)]">$0</div>
-            <div className="text-sm text-[var(--text-secondary)] mt-2">1 group, basic features</div>
-          </div>
-          <div className="p-4 rounded-xl bg-[var(--accent-terracotta)] text-white">
-            <div className="text-sm text-white/70 mb-1">Pro</div>
-            <div className="text-2xl font-bold">$7.99/mo</div>
-            <div className="text-sm text-white/80 mt-2">Per organizer, unlimited groups</div>
-          </div>
-          <div className="p-4 rounded-xl bg-[var(--bg-secondary)]">
-            <div className="text-sm text-[var(--text-tertiary)] mb-1">Group Plan</div>
-            <div className="text-2xl font-bold text-[var(--text-primary)]">$99/year</div>
-            <div className="text-sm text-[var(--text-secondary)] mt-2">Whole group up to 12 members</div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function MarketingSection() {
-  return (
-    <section className="space-y-8">
-      <div>
-        <h1 className="font-serif text-3xl md:text-4xl text-[var(--text-primary)] mb-4">Marketing Plan</h1>
-        <p className="text-[var(--text-secondary)] text-lg">Positioning, messaging, and content strategy</p>
-      </div>
-
-      {/* Positioning */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl p-6 md:p-8 border border-[var(--border)]">
-        <h2 className="text-xl font-semibold mb-6 text-[var(--text-primary)]">Positioning Statement</h2>
-        <div className="space-y-4 text-lg">
-          <p><span className="text-[var(--accent-terracotta)] font-medium">For</span> burned-out women&apos;s group organizers</p>
-          <p><span className="text-[var(--accent-terracotta)] font-medium">Who</span> carry all the mental load of scheduling, reminders, and chasing RSVPs</p>
-          <p><span className="text-[var(--accent-terracotta)] font-medium">KeepClose</span> is an AI co-organizer</p>
-          <p><span className="text-[var(--accent-terracotta)] font-medium">That</span> tracks engagement, sends personalized nudges, and remembers preferences</p>
-          <p><span className="text-[var(--accent-terracotta)] font-medium">Unlike</span> scheduling tools that just find times</p>
-          <p><span className="text-[var(--accent-terracotta)] font-medium">We</span> focus on keeping groups ALIVE, not just scheduled</p>
-        </div>
-      </div>
-
-      {/* Tagline */}
-      <div className="bg-gradient-to-r from-[var(--accent-terracotta)] to-[var(--accent-sage)] rounded-2xl p-8 text-center">
-        <p className="text-white/80 mb-2">Tagline</p>
-        <h2 className="font-serif text-3xl md:text-4xl text-white">&quot;You don&apos;t have to do this alone.&quot;</h2>
-      </div>
-
-      {/* Messaging Pillars */}
-      <div className="grid md:grid-cols-3 gap-6">
-        {[
-          { title: "Relief", message: "\"You don't have to chase RSVPs anymore.\"", desc: "Acknowledging organizer burnout as real emotional labor" },
-          { title: "Intelligence", message: "\"AI that remembers what you forget.\"", desc: "Jenny can't do Tuesdays? We remember forever." },
-          { title: "Connection", message: "\"Keep the group alive, not just scheduled.\"", desc: "Engagement-first, not calendar-first" },
-        ].map((pillar, i) => (
-          <div key={i} className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-            <h3 className="font-semibold text-lg text-[var(--accent-terracotta)] mb-3">{pillar.title}</h3>
-            <p className="text-[var(--text-primary)] font-medium mb-2">{pillar.message}</p>
-            <p className="text-sm text-[var(--text-secondary)]">{pillar.desc}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Brand Voice */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-        <h3 className="font-semibold text-lg mb-6 text-[var(--text-primary)]">Brand Voice</h3>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="text-[var(--accent-sage)] font-medium mb-3">✓ We Are</h4>
-            <ul className="space-y-2 text-[var(--text-secondary)]">
-              <li>• Supportive co-host who gets it</li>
-              <li>• Empathetic, not preachy</li>
-              <li>• Quiet intelligence working in background</li>
-              <li>• Celebrating small wins</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-[var(--alert-red)] font-medium mb-3">✗ We&apos;re Not</h4>
-            <ul className="space-y-2 text-[var(--text-secondary)]">
-              <li>• Corporate productivity tool</li>
-              <li>• Demanding or guilt-tripping</li>
-              <li>• Feature-heavy dashboards</li>
-              <li>• Calendar grids everywhere</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Content Calendar */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-        <h3 className="font-semibold text-lg mb-6 text-[var(--text-primary)]">Content Strategy</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[var(--border)]">
-                <th className="text-left py-3 px-4 font-medium text-[var(--text-tertiary)]">Channel</th>
-                <th className="text-left py-3 px-4 font-medium text-[var(--text-tertiary)]">Frequency</th>
-                <th className="text-left py-3 px-4 font-medium text-[var(--text-tertiary)]">Content Type</th>
-              </tr>
-            </thead>
-            <tbody className="text-[var(--text-secondary)]">
-              <tr className="border-b border-[var(--border)]">
-                <td className="py-3 px-4">Blog</td>
-                <td className="py-3 px-4">Weekly</td>
-                <td className="py-3 px-4">SEO articles: &quot;How to Keep Book Club Alive&quot;</td>
-              </tr>
-              <tr className="border-b border-[var(--border)]">
-                <td className="py-3 px-4">LinkedIn</td>
-                <td className="py-3 px-4">3x/week</td>
-                <td className="py-3 px-4">Founder story, organizing tips, wins</td>
-              </tr>
-              <tr className="border-b border-[var(--border)]">
-                <td className="py-3 px-4">Instagram</td>
-                <td className="py-3 px-4">4x/week</td>
-                <td className="py-3 px-4">Carousels, engagement tips, testimonials</td>
-              </tr>
-              <tr>
-                <td className="py-3 px-4">Email</td>
-                <td className="py-3 px-4">5-part series</td>
-                <td className="py-3 px-4">Welcome sequence + milestone celebrations</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function BrandSection() {
-  return (
-    <section className="space-y-8">
-      <div>
-        <h1 className="font-serif text-3xl md:text-4xl text-[var(--text-primary)] mb-4">Brand Guidelines</h1>
-        <p className="text-[var(--text-secondary)] text-lg">Visual identity and design system for KeepClose</p>
-      </div>
-
-      {/* Color Palette */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-        <h3 className="font-semibold text-lg mb-6 text-[var(--text-primary)]">Color Palette</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="rounded-xl overflow-hidden">
-            <div className="h-24 bg-[#d4725f]" />
-            <div className="p-3 bg-[var(--bg-secondary)]">
-              <div className="font-medium">Terracotta</div>
-              <div className="text-sm text-[var(--text-tertiary)] font-mono">#d4725f</div>
-            </div>
-          </div>
-          <div className="rounded-xl overflow-hidden">
-            <div className="h-24 bg-[#7a9588]" />
-            <div className="p-3 bg-[var(--bg-secondary)]">
-              <div className="font-medium">Sage Green</div>
-              <div className="text-sm text-[var(--text-tertiary)] font-mono">#7a9588</div>
-            </div>
-          </div>
-          <div className="rounded-xl overflow-hidden">
-            <div className="h-24 bg-[#faf8f5]" />
-            <div className="p-3 bg-[var(--bg-secondary)]">
-              <div className="font-medium">Warm Cream</div>
-              <div className="text-sm text-[var(--text-tertiary)] font-mono">#faf8f5</div>
-            </div>
-          </div>
-          <div className="rounded-xl overflow-hidden">
-            <div className="h-24 bg-[#e8b968]" />
-            <div className="p-3 bg-[var(--bg-secondary)]">
-              <div className="font-medium">Warm Yellow</div>
-              <div className="text-sm text-[var(--text-tertiary)] font-mono">#e8b968</div>
-            </div>
-          </div>
-          <div className="rounded-xl overflow-hidden">
-            <div className="h-24 bg-[#2d2721]" />
-            <div className="p-3 bg-[var(--bg-secondary)]">
-              <div className="font-medium">Deep Brown</div>
-              <div className="text-sm text-[var(--text-tertiary)] font-mono">#2d2721</div>
-            </div>
-          </div>
-          <div className="rounded-xl overflow-hidden">
-            <div className="h-24 bg-[#6b6258]" />
-            <div className="p-3 bg-[var(--bg-secondary)]">
-              <div className="font-medium">Muted Brown</div>
-              <div className="text-sm text-[var(--text-tertiary)] font-mono">#6b6258</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Typography */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-        <h3 className="font-semibold text-lg mb-6 text-[var(--text-primary)]">Typography</h3>
-        <div className="space-y-6">
-          <div>
-            <p className="text-sm text-[var(--text-tertiary)] mb-2">Display — Instrument Serif</p>
-            <p className="font-serif text-4xl">You don&apos;t have to do this alone</p>
-          </div>
-          <div>
-            <p className="text-sm text-[var(--text-tertiary)] mb-2">Body — Plus Jakarta Sans</p>
-            <p className="text-lg">Your co-organizer that remembers everything, nudges quietly, and keeps your group thriving.</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
-            <div>
-              <span className="text-xs text-[var(--text-tertiary)]">H1</span>
-              <p className="font-serif text-3xl">48px</p>
-            </div>
-            <div>
-              <span className="text-xs text-[var(--text-tertiary)]">H2</span>
-              <p className="font-serif text-2xl">36px</p>
-            </div>
-            <div>
-              <span className="text-xs text-[var(--text-tertiary)]">Body</span>
-              <p className="text-base">16px</p>
-            </div>
-            <div>
-              <span className="text-xs text-[var(--text-tertiary)]">Small</span>
-              <p className="text-sm">14px</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Components */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-        <h3 className="font-semibold text-lg mb-6 text-[var(--text-primary)]">Components</h3>
-        <div className="space-y-8">
-          {/* Buttons */}
-          <div>
-            <p className="text-sm text-[var(--text-tertiary)] mb-4">Buttons</p>
-            <div className="flex flex-wrap gap-4">
-              <button className="px-6 py-3 bg-[var(--accent-terracotta)] text-white rounded-lg font-medium hover:bg-[var(--accent-terracotta-hover)] transition-colors">
-                Primary Button
-              </button>
-              <button className="px-6 py-3 border-2 border-[var(--accent-sage)] text-[var(--accent-sage)] rounded-lg font-medium hover:bg-[var(--accent-sage)] hover:text-white transition-colors">
-                Secondary Button
-              </button>
-              <button className="px-6 py-3 text-[var(--accent-terracotta)] underline font-medium">
-                Text Link
-              </button>
-            </div>
-          </div>
-          {/* Badges */}
-          <div>
-            <p className="text-sm text-[var(--text-tertiary)] mb-4">Member Status Badges</p>
-            <div className="flex flex-wrap gap-3">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#6d9a7f]/20 text-[#6d9a7f] text-sm">
-                <span className="w-2 h-2 rounded-full bg-[#6d9a7f]" /> Active
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e8b968]/20 text-[#e8b968] text-sm">
-                <span className="w-2 h-2 rounded-full bg-[#e8b968]" /> Quiet
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c85a50]/20 text-[#c85a50] text-sm">
-                <span className="w-2 h-2 rounded-full bg-[#c85a50]" /> Missing
-              </span>
-            </div>
-          </div>
-          {/* Cards */}
-          <div>
-            <p className="text-sm text-[var(--text-tertiary)] mb-4">Cards</p>
-            <div className="max-w-sm bg-[var(--bg-primary)] rounded-xl p-4 border border-[var(--border)]">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-[var(--accent-sage)]" />
-                <div>
-                  <p className="font-medium">Sarah Johnson</p>
-                  <p className="text-sm text-[var(--text-tertiary)]">Book club organizer</p>
-                </div>
-              </div>
-              <p className="text-[var(--text-secondary)] text-sm">Attended 8/10 events • Last seen 2 days ago</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Design Principles */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-        <h3 className="font-semibold text-lg mb-6 text-[var(--text-primary)]">Design Principles</h3>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-medium text-[var(--accent-terracotta)] mb-2">Warm & Approachable</h4>
-              <p className="text-sm text-[var(--text-secondary)]">Earth tones, soft corners (8-12px radius), friendly typography</p>
-            </div>
-            <div>
-              <h4 className="font-medium text-[var(--accent-terracotta)] mb-2">Feed-First Dashboard</h4>
-              <p className="text-sm text-[var(--text-secondary)]">Show stories, not spreadsheets. Timeline of activity, not calendar grids.</p>
-            </div>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-medium text-[var(--accent-terracotta)] mb-2">People-Focused</h4>
-              <p className="text-sm text-[var(--text-secondary)]">Member cards with engagement status, not just names in a list.</p>
-            </div>
-            <div>
-              <h4 className="font-medium text-[var(--accent-terracotta)] mb-2">Supportive Copy</h4>
-              <p className="text-sm text-[var(--text-secondary)]">&quot;You don&apos;t have to do this alone&quot; — empathy, not productivity guilt.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function AssetsSection() {
-  const assets = [
-    { name: "Logo", dimensions: "500x500", file: "logo.png", url: "https://drive.google.com/file/d/1sFRVy2CItyK0hugaiVr6At7QxdJ_68fo/view" },
-    { name: "Favicon", dimensions: "32x32", file: "favicon.png", url: "https://drive.google.com/file/d/1vCSqKOFa6Kqwfr6Ee2FHBQzxFVdoSCmj/view" },
-    { name: "OG Image", dimensions: "1200x630", file: "og-image.png", url: "https://drive.google.com/file/d/1qGnpq06W9PlP-RV3RJH5B2KqVO_MYlV4/view" },
-    { name: "LinkedIn Banner", dimensions: "1584x396", file: "linkedin-banner.png", url: "https://drive.google.com/file/d/1rZRNRTd-ZR7B7D1pEhkhhSBJZKjsnn6g/view" },
-    { name: "Twitter Header", dimensions: "1500x500", file: "twitter-header.png", url: "https://drive.google.com/file/d/1yc583W8uTKeOCZjvH7gi8zrfmtfYj44K/view" },
-    { name: "Social Media Card", dimensions: "1200x630", file: "social-card.png", url: "https://drive.google.com/file/d/1L8TLT0ex1xa0bCLv2t_Z5-Ljgmny_SLB/view" },
-    { name: "Instagram Post", dimensions: "1080x1080", file: "instagram-post.png", url: "https://drive.google.com/file/d/1RF9_tgUqISc3YuqM4N9VmS7Q1uGqY_4N/view" },
-  ];
-
-  return (
-    <section className="space-y-8">
-      <div>
-        <h1 className="font-serif text-3xl md:text-4xl text-[var(--text-primary)] mb-4">Brand Assets</h1>
-        <p className="text-[var(--text-secondary)] text-lg">Download logos, banners, and social media assets</p>
-      </div>
-
-      {/* Download All */}
-      <a 
-        href="https://drive.google.com/drive/folders/1aBathQVZnQ_5PVQG86dpH5twOPaY059-"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center justify-between p-6 bg-gradient-to-r from-[var(--accent-terracotta)] to-[var(--accent-sage)] rounded-2xl text-white hover:opacity-90 transition-opacity"
-      >
-        <div>
-          <h3 className="font-semibold text-lg">Download All Assets</h3>
-          <p className="text-white/80 text-sm">Google Drive folder with all brand assets</p>
-        </div>
-        <DownloadIcon />
-      </a>
-
-      {/* Asset Grid */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {assets.map((asset, i) => (
-          <div key={i} className="bg-[var(--bg-surface)] rounded-2xl overflow-hidden border border-[var(--border)]">
-            <div className="h-40 bg-gradient-to-br from-[var(--accent-terracotta)]/20 to-[var(--accent-sage)]/20 flex items-center justify-center">
-              <div className="text-center">
-                <p className="font-medium text-[var(--text-primary)]">{asset.name}</p>
-                <p className="text-xs text-[var(--text-tertiary)]">{asset.dimensions}</p>
-              </div>
-            </div>
-            <div className="p-4 flex items-center justify-between">
-              <div>
-                <p className="font-medium text-sm">{asset.file}</p>
-              </div>
-              <a 
-                href={asset.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 py-1.5 bg-[var(--accent-terracotta)] text-white text-sm rounded-lg hover:bg-[var(--accent-terracotta-hover)] transition-colors"
-              >
-                <DownloadIcon /> Download
-              </a>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Usage Guidelines */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-        <h3 className="font-semibold text-lg mb-6 text-[var(--text-primary)]">Usage Guidelines</h3>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="text-[var(--accent-sage)] font-medium mb-3">✓ Do</h4>
-            <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-              <li>• Use the logo with adequate clear space</li>
-              <li>• Keep the terracotta/sage color palette</li>
-              <li>• Maintain warm, supportive tone in copy</li>
-              <li>• Use on light cream backgrounds</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-[var(--alert-red)] font-medium mb-3">✗ Don&apos;t</h4>
-            <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-              <li>• Stretch or distort the logo</li>
-              <li>• Use corporate blue/gray colors</li>
-              <li>• Add shadows or effects to logo</li>
-              <li>• Use on busy background images</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PitchSection() {
-  return (
-    <section className="space-y-8">
-      <div>
-        <h1 className="font-serif text-3xl md:text-4xl text-[var(--text-primary)] mb-4">Pitch Deck</h1>
-        <p className="text-[var(--text-secondary)] text-lg">Investment presentation for KeepClose</p>
-      </div>
-
-      {/* External Link */}
-      <Link 
-        href="/pitch"
-        className="flex items-center justify-between p-6 bg-gradient-to-r from-[var(--accent-terracotta)] to-[var(--accent-sage)] rounded-2xl text-white hover:opacity-90 transition-opacity"
-      >
-        <div>
-          <h3 className="font-semibold text-lg">View Full Pitch Deck</h3>
-          <p className="text-white/80 text-sm">Interactive presentation with animations</p>
-        </div>
-        <ExternalLinkIcon />
-      </Link>
-
-      {/* Deck Overview */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-        <h3 className="font-semibold text-lg mb-6 text-[var(--text-primary)]">Deck Overview</h3>
-        <div className="space-y-4">
-          {[
-            { slide: 1, title: "Problem", content: "70% of women's groups die within 6 months due to organizer burnout" },
-            { slide: 2, title: "Solution", content: "AI co-organizer that tracks engagement, not just schedules" },
-            { slide: 3, title: "Market", content: "$2.8B TAM, 5M+ group organizers in US alone" },
-            { slide: 4, title: "Product", content: "Feed-first dashboard, AI nudges, preference memory" },
-            { slide: 5, title: "Traction", content: "82% of beta groups still meeting after 6 months" },
-            { slide: 6, title: "Business Model", content: "Freemium: Free → $7.99/mo Pro → $99/year Group" },
-            { slide: 7, title: "Competition", content: "vs Bookclubs (manual), WhenAvailable (just scheduling)" },
-            { slide: 8, title: "GTM Strategy", content: "Facebook Groups, Reddit, Pinterest SEO, Referrals" },
-            { slide: 9, title: "Financials", content: "Year 1: $200K, Year 2: $1M, Year 5: $20M" },
-            { slide: 10, title: "The Ask", content: "$500K pre-seed for product, marketing, operations" },
-          ].map((slide) => (
-            <div key={slide.slide} className="flex gap-4 items-start p-4 rounded-xl bg-[var(--bg-secondary)]">
-              <div className="w-8 h-8 rounded-full bg-[var(--accent-terracotta)] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
-                {slide.slide}
-              </div>
-              <div>
-                <h4 className="font-medium text-[var(--text-primary)]">{slide.title}</h4>
-                <p className="text-sm text-[var(--text-secondary)]">{slide.content}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Key Metrics */}
-      <div className="bg-[var(--bg-surface)] rounded-2xl p-6 border border-[var(--border)]">
-        <h3 className="font-semibold text-lg mb-6 text-[var(--text-primary)]">Key Investment Metrics</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-[var(--bg-secondary)] text-center">
-            <div className="text-2xl font-bold text-[var(--accent-terracotta)]">11.6x</div>
-            <div className="text-sm text-[var(--text-tertiary)]">LTV:CAC</div>
-          </div>
-          <div className="p-4 rounded-xl bg-[var(--bg-secondary)] text-center">
-            <div className="text-2xl font-bold text-[var(--accent-terracotta)]">$500K</div>
-            <div className="text-sm text-[var(--text-tertiary)]">Pre-seed Ask</div>
-          </div>
-          <div className="p-4 rounded-xl bg-[var(--bg-secondary)] text-center">
-            <div className="text-2xl font-bold text-[var(--accent-terracotta)]">$20M</div>
-            <div className="text-sm text-[var(--text-tertiary)]">Year 5 Revenue</div>
-          </div>
-          <div className="p-4 rounded-xl bg-[var(--bg-secondary)] text-center">
-            <div className="text-2xl font-bold text-[var(--accent-terracotta)]">82%</div>
-            <div className="text-sm text-[var(--text-tertiary)]">Retention Rate</div>
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
